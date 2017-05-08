@@ -15,6 +15,8 @@ public class CacheHandleRequest implements Runnable {
     private Long epoch;
     private String url = "localhost";
 
+    //Starting to handle request
+    
     CacheHandleRequest(Socket clientSocket){
         this.clientSocket = clientSocket;
     }
@@ -22,11 +24,15 @@ public class CacheHandleRequest implements Runnable {
     public void run(){
         try{
 
+            //Using sleep to show off multithreading
+            
             System.out.println("Request received.");
             //TimeUnit.SECONDS.sleep(3);
             long epoch2 = System.currentTimeMillis();
             byte[] inputByteArray = new byte[1000];
             byte[] outputByteArray = new byte[1000];
+            
+            //Starting to read request and initialize the output stream
 
             InputStream in = clientSocket.getInputStream();
             OutputStream out = clientSocket.getOutputStream();
@@ -34,9 +40,13 @@ public class CacheHandleRequest implements Runnable {
             in.read(inputByteArray, 0, 1000);
             String data = new String(inputByteArray);
             System.out.println(data);
+            
+            //Seperating out the information in the request
 
             String[] lines =  data.split(System.getProperty("line.separator"));
 
+            //Getting the filename
+            
             for(String line: lines)
                 if(line.contains("Filename"))
                     target = line.split(" ")[1];
@@ -44,6 +54,8 @@ public class CacheHandleRequest implements Runnable {
             final File file = new File(rootDir, URLDecoder.decode(target, "UTF-8"));
             System.out.println(file.getAbsolutePath());
             if(!file.exists()){
+                
+                //If the file isn't in cache send request to origin serer
 
                 System.out.println("not found");
                 client Client = new client(file.getAbsolutePath());
@@ -53,8 +65,13 @@ public class CacheHandleRequest implements Runnable {
                 out.write(("HTTP/1.1 200\r\nTime2: " + epoch2 + "\r\nTime3: " + epoch3 + "\r\n\r\n" + new String(outputByteArray)).getBytes());
             }else if(!file.canRead()){
                 System.out.println("Error: cannot read from file at this time.");
-                // something went wrong can't read from file
+                
+                //Something went wrong can't read from file
+                
             }else{
+                
+                //Registering file is in cahce and sending it out
+                
                 System.out.println("here");
                 FileInputStream fis = new FileInputStream(file);
                 fis.read(outputByteArray);
@@ -62,6 +79,7 @@ public class CacheHandleRequest implements Runnable {
                 out.write(("HTTP/1.1 200\r\nTime2: " + epoch2 + "\r\nTime3: " + epoch3 + "\r\n\r\n" + new String(outputByteArray)).getBytes());
             }
 
+            //Closing the streams and finishing the request
 
             out.close();
             in.close();
