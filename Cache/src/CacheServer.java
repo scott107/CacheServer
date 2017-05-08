@@ -7,6 +7,8 @@ import java.net.Socket;
  */
 
 public class CacheServer {
+    
+    //Setting up socket and showing acceptance of request
 
     private static int serverPort = 8080;
     private static ServerSocket serverSocket;
@@ -16,15 +18,22 @@ public class CacheServer {
         setupServerSocket();
         while(true){
             try {
+                
+                //Accepting client
+                
                 clientSocket = serverSocket.accept();
                 System.out.println("Accepted.");
             }catch(IOException e){}
 
+            //Start of multithreading and handling of requests
+            
             new Thread(
                     new CacheHandleRequest(clientSocket)
             ).start();
         }
     }
+    
+    //Creating the server socket
 
     public static void setupServerSocket() {
         try {
