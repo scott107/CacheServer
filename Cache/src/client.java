@@ -10,6 +10,9 @@ import java.net.*;
 public class client {
 
     public client(String file) throws IOException{
+        
+        //Starts incoming request in a new thread
+        
         System.out.println("client hit");
         long epoch = System.currentTimeMillis() / 1000;
         String url = "192.168.0.6";
