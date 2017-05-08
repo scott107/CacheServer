@@ -13,6 +13,9 @@ public class Server {
     private static Socket clientSocket;
 
     public static void main(String[] args){
+        
+        //Setting up sockets and receiving incoming requests
+        
         setupServerSocket();
         while(true){
             try {
@@ -20,11 +23,15 @@ public class Server {
                 System.out.println("Accepted.");
             }catch(IOException e){}
 
+            //Start multithreading for seperate requests
+            
             new Thread(
                     new ServerHandleRequest(clientSocket)
             ).start();
         }
     }
+    
+    //Setting up the server socket
 
     public static void setupServerSocket() {
         try {
